@@ -7,6 +7,7 @@ App mobile offline para controlar o recebimento de aluguéis. Substitui o contro
 - **Flutter** — framework principal
 - **Riverpod** — gerenciamento de estado
 - **Isar** — banco de dados local (offline-first)
+- **Go Router** — gerenciamento de rotas declarativo
 - **MVVM** — padrão arquitetural
 
 ## Arquitetura (MVVM)
@@ -28,7 +29,8 @@ UI (View) → ViewModel → Repository → Isar (banco local)
 
 ```
 lib/
-├── app/                  # Configurações globais: tema, rotas, widget raiz
+├── app/
+│   └── router/           # Rotas do app (GoRouter)
 ├── core/
 │   ├── database/         # Inicialização do Isar e providers globais
 │   ├── enums/            # Enums: CasaStatus, TituloStatus
