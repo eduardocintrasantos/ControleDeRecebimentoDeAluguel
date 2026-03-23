@@ -20,7 +20,7 @@ class AppRouter {
   static const String titulo = '/titulo';
 
   static final GoRouter router = GoRouter(
-    initialLocation: imobiliaria,
+    initialLocation: dashboard,
     routes: [
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
@@ -55,9 +55,8 @@ class AppRouter {
       GoRoute(
         path: imobiliariaEditar,
         name: 'imobiliaria-editar',
-        builder: (context, state) => CreateImobiliariaPage(
-          imobiliaria: state.extra as ModelImobiliaria,
-        ),
+        builder: (context, state) =>
+            CreateImobiliariaPage(imobiliaria: state.extra as ModelImobiliaria),
       ),
       GoRoute(
         path: casaNova,
@@ -67,9 +66,8 @@ class AppRouter {
       GoRoute(
         path: casaEditar,
         name: 'casa-editar',
-        builder: (context, state) => CreateCasaPage(
-          casa: state.extra as ModelCasa,
-        ),
+        builder: (context, state) =>
+            CreateCasaPage(casa: state.extra as ModelCasa),
       ),
     ],
   );

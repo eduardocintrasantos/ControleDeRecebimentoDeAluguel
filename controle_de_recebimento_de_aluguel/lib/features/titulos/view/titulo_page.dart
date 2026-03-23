@@ -1,3 +1,5 @@
+import 'package:controle_de_recebimento_de_aluguel/features/casa/model/model_casa.dart';
+import 'package:controle_de_recebimento_de_aluguel/features/casa/view_model/casa_view_model.dart';
 import 'package:controle_de_recebimento_de_aluguel/features/imobiliaria/model/model_imobiliaria.dart';
 import 'package:controle_de_recebimento_de_aluguel/features/imobiliaria/view_model/imobiliaria_view_model.dart';
 import 'package:controle_de_recebimento_de_aluguel/features/titulos/model/model_titulo.dart';
@@ -17,6 +19,7 @@ class TituloPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(tituloViewModelProvider);
     final imobiliarias = ref.watch(imobiliariaViewModelProvider).valueOrNull ?? [];
+    final casas = ref.watch(casaViewModelProvider).valueOrNull ?? [];
     final vm = ref.read(tituloViewModelProvider.notifier);
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -45,7 +48,7 @@ class TituloPage extends ConsumerWidget {
               AsyncError(:final error) =>
                 Center(child: Text('Erro: $error')),
               AsyncData(:final value) when value.isEmpty => _EmptyState(),
-              AsyncData(:final value) => _TituloList(titulos: value),
+              AsyncData(:final value) => _TituloList(titulos: value, casas: casas),
               _ => const SizedBox.shrink(),
             },
           ),
@@ -221,24 +224,32 @@ class _EmptyState extends StatelessWidget {
 
 class _TituloList extends ConsumerWidget {
   final List<ModelTitulo> titulos;
+  final List<ModelCasa> casas;
 
-  const _TituloList({required this.titulos});
+  const _TituloList({required this.titulos, required this.casas});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       itemCount: titulos.length,
-      itemBuilder: (context, index) =>
-          _TituloCard(titulo: titulos[index]),
+      itemBuilder: (context, index) {
+        final titulo = titulos[index];
+        final casa = casas.cast<ModelCasa?>().firstWhere(
+              (c) => c?.id == titulo.idCasa,
+              orElse: () => null,
+            );
+        return _TituloCard(titulo: titulo, casa: casa);
+      },
     );
   }
 }
 
 class _TituloCard extends ConsumerWidget {
   final ModelTitulo titulo;
+  final ModelCasa? casa;
 
-  const _TituloCard({required this.titulo});
+  const _TituloCard({required this.titulo, this.casa});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -277,6 +288,17 @@ class _TituloCard extends ConsumerWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (casa != null)
+              Row(
+                children: [
+                  Icon(Icons.home_outlined, size: 13, color: colorScheme.outline),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${casa!.rua}, ${casa!.numero} — ${casa!.bairro}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
             Text(
               'R\$ ${titulo.valorAluguel.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
